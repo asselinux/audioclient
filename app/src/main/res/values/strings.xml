@@ -14,4 +14,14 @@
     <string name="button_deny">Deny</string>
     <string name="full_time">99:99</string>
     <string name="current_time">00:00</string>
+
+    <string name="fast_forward">Fast forward speed(sec)</string>
+    <string name="fast_back">Rewind speed(sec)</string>
+    <string name="play_speed">Play speed</string>
+    <string-array name="play_speed">
+        <item>1x</item>
+        <item>0,5x</item>
+        <item>1,5x</item>
+        <item>2x</item>
+    </string-array>
 </resources>

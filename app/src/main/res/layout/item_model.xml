@@ -12,7 +12,7 @@
         android:layout_alignParentStart="true"
         android:layout_margin="@dimen/model_item_image_margin"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_photo_size_select_actual_black_24dp"
+        android:src="@drawable/book"
         tools:ignore="ContentDescription"/>
 
     <TextView
@@ -24,6 +24,6 @@
         android:layout_toEndOf="@+id/item_model_image"
         android:textSize="@dimen/model_item_name_text_size"
         tools:ignore="RelativeOverlap"
-        tools:text="@string/name"/>
+        tools:text="Best audio book ever"/>
 
 </RelativeLayout>

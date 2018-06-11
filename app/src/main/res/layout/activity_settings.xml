@@ -5,14 +5,6 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:background="@color/colorPrimary">
-
-    </android.support.v7.widget.Toolbar>
-
     <TextView
         android:id="@+id/first_set"
         android:layout_width="match_parent"

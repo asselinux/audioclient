@@ -1,19 +1,22 @@
 package ru.veider.audioclient.audioclient;
 
+import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
-import android.os.Handler;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MediaPlayerActivity extends AppCompatActivity {
+
+    private static final String EXTRA_URL = "url";
 
     private SeekBar timeSeekBar;
     private TextView numberForTrack, lastTime;
@@ -24,15 +27,17 @@ public class MediaPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_player);
 
-        final MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.music);
+        Intent intent = getIntent();
+        String url = intent.getStringExtra(EXTRA_URL);
+
+        final MediaPlayer mediaPlayer = MediaPlayer.create(this, Uri.parse(url));
         mediaPlayer.setLooping(true);
 
-        numberForTrack = findViewById(R.id.allDuration);
-        final Button mPlayButton = findViewById(R.id.playButton);
-        Button mStopButton = findViewById(R.id.stopButton);
-        Button mNextButton = findViewById(R.id.nextBook);
-        Button mBackButton = findViewById(R.id.backBook);
-        lastTime = findViewById(R.id.lastTime);
+        numberForTrack = findViewById(R.id.current_time);
+        final ImageButton mPlayButton = findViewById(R.id.playButton);
+        ImageButton mNextButton = findViewById(R.id.nextButton);
+        ImageButton mBackButton = findViewById(R.id.backButton);
+        lastTime = findViewById(R.id.full_time);
 
         int totalTime = mediaPlayer.getDuration();
 
@@ -40,14 +45,6 @@ public class MediaPlayerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 playPause(mediaPlayer, mPlayButton);
-                Toast.makeText(getApplicationContext(), "Play", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        mStopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mediaPlayer.stop();
             }
         });
 
@@ -81,7 +78,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
             }
         });
 
-        timeSeekBar = findViewById(R.id.seekBarForBook);
+        timeSeekBar = findViewById(R.id.seekBar);
         timeSeekBar.setMax(totalTime);
 
         //SeekBar
@@ -90,9 +87,9 @@ public class MediaPlayerActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
                     mediaPlayer.seekTo(progress);
-//                    timeSeekBar.setProgress(progress);
                     if (!mediaPlayer.isPlaying()) {
                         mediaPlayer.start();
+                        mPlayButton.setImageResource(R.drawable.ic_play_circle_filled_black_24dp);
                     }
                 }
             }
@@ -109,7 +106,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         });
     }
 
-    public String createTimeLabel(int time) {
+    private String createTimeLabel(int time) {
         String timeLabel = "";
         int min = time / 1000 / 60;
         int sec = time / 1000 % 60;
@@ -122,14 +119,17 @@ public class MediaPlayerActivity extends AppCompatActivity {
         return timeLabel;
     }
 
-    private void playPause(final MediaPlayer mediaPlayer, Button mPlayButton) {
-
+    private void playPause(final MediaPlayer mediaPlayer, ImageButton mPlayButton) {
+        //if need to pause
         if (mediaPlayer.isPlaying() && timer != null) {
-            mPlayButton.setText(">");
+            //pause
+            mPlayButton.setImageResource(R.drawable.ic_play_circle_filled_black_24dp);
             timer.cancel();
             timer = null;
             mediaPlayer.pause();
         } else if (timer == null) {
+            //play
+            mPlayButton.setImageResource(R.drawable.ic_pause_circle_filled_black_24dp);
             mediaPlayer.start();
             timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {//
@@ -148,7 +148,10 @@ public class MediaPlayerActivity extends AppCompatActivity {
                     });
                 }
             }, 0, 1000);
-            mPlayButton.setText("||");
         }
+    }
+
+    public static void start(Context context, String url) {
+        context.startActivity(new Intent(context, MediaPlayerActivity.class).putExtra(EXTRA_URL, url));
     }
 }

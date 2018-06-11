@@ -8,6 +8,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+
 import ru.veider.audioclient.audioclient.storage.AudioLibrary;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,6 +33,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MediaPlayerActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override
@@ -53,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 }

@@ -51,8 +51,8 @@ public class AudioLibrary extends AppCompatActivity {
 
         adapter = new MediaModelAdapter(new MediaModelAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(@NonNull MediaModel mediaModel) {
-                MediaPlayerActivity.start(AudioLibrary.this, mediaModel.getName(), mediaModel.getUrl());
+            public void onItemClick(@NonNull MediaModel mediaModel, int position) {
+                MediaPlayerActivity.start(AudioLibrary.this, position);
             }
         });
         recyclerView.setAdapter(adapter);
@@ -67,7 +67,7 @@ public class AudioLibrary extends AppCompatActivity {
         File[] files = root.listFiles();
         Log.w("TAG", root.getAbsolutePath());
         if (files == null){
-            Toast.makeText(this, "123wef", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Files not found", Toast.LENGTH_SHORT).show();
         } else
         for (File singleFile : files) {
             if (singleFile.isDirectory() && !singleFile.isHidden()) {
@@ -86,7 +86,6 @@ public class AudioLibrary extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 AudioLibraryPermissionsDispatcher.loadFromExternalWithPermissionCheck(AudioLibrary.this);
-
             }
         });
     }
@@ -110,9 +109,12 @@ public class AudioLibrary extends AppCompatActivity {
             String name = file.getName().replace(".mp3", "").replace(".wav", "");
             list.add(new MediaModel(name, null, file.getAbsolutePath()));
         }
+        repository = list;
         adapter.replaceAll(list);
 
     }
+
+    public static List<MediaModel> repository;
 
     @OnShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
     void showRationaleForStorage(final PermissionRequest request) {

@@ -26,7 +26,8 @@
         <activity
             android:name=".storage.AudioLibrary"
             android:label="@string/title_activity_audio_library"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".MediaPlayerActivity" />
     </application>
 
 </manifest>

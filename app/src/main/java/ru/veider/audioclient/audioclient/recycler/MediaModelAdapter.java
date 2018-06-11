@@ -19,21 +19,36 @@ public class MediaModelAdapter extends RecyclerView.Adapter<MediaModelAdapter.Mo
 
     private final List<MediaModel> models = new ArrayList<>();
 
+    public OnItemClickListener onItemClickListener;
+
+    public MediaModelAdapter(@NonNull OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
     @NonNull
     @Override
     public ModelHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View itemView = inflater.inflate(R.layout.item_model, parent, false);
-        return new ModelHolder(itemView);
+        final ModelHolder holder = new ModelHolder(itemView);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = holder.getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && onItemClickListener != null) {
+                    MediaModel model = models.get(position);
+                    onItemClickListener.onItemClick(model);
+                }
+            }
+        });
+        return holder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull MediaModelAdapter.ModelHolder holder, int position) {
         MediaModel model = models.get(position);
-
         Picasso.get().load(model.getImage()).into(holder.image);
         holder.name.setText(model.getName());
-
     }
 
     @Override
@@ -58,6 +73,10 @@ public class MediaModelAdapter extends RecyclerView.Adapter<MediaModelAdapter.Mo
             image = itemView.findViewById(R.id.item_model_image);
             name = itemView.findViewById(R.id.item_model_name);
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(@NonNull MediaModel mediaModel);
     }
 }
 

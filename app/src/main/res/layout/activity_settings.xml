@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/fast_back"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintTop_toTopOf="parent"
         android:paddingLeft="10dp"
         android:paddingTop="20dp"
         android:paddingBottom="20dp"

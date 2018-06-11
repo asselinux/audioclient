@@ -6,6 +6,8 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -26,6 +28,9 @@ public class MediaPlayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_player);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(R.string.name);
 
         Intent intent = getIntent();
         String url = intent.getStringExtra(EXTRA_URL);
@@ -153,5 +158,34 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
     public static void start(Context context, String url) {
         context.startActivity(new Intent(context, MediaPlayerActivity.class).putExtra(EXTRA_URL, url));
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

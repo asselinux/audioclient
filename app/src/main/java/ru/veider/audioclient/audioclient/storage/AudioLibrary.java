@@ -15,7 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -34,6 +33,8 @@ import ru.veider.audioclient.audioclient.R;
 import ru.veider.audioclient.audioclient.SettingsActivity;
 import ru.veider.audioclient.audioclient.recycler.MediaModel;
 import ru.veider.audioclient.audioclient.recycler.MediaModelAdapter;
+import ru.veider.audioclient.audioclient.MediaPlayerActivity;
+import ru.veider.audioclient.audioclient.SettingsActivity;
 
 @RuntimePermissions
 public class AudioLibrary extends AppCompatActivity {
@@ -46,8 +47,6 @@ public class AudioLibrary extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_library);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
         fabStorage = findViewById(R.id.fab);
         recyclerView = findViewById(R.id.recyclerView);
 

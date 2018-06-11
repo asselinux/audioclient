@@ -11,18 +11,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnPermissionDenied;
@@ -46,8 +42,6 @@ public class AudioLibrary extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_library);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
         fabStorage = findViewById(R.id.fab);
         recyclerView = findViewById(R.id.recyclerView);
 
@@ -58,12 +52,14 @@ public class AudioLibrary extends AppCompatActivity {
         adapter = new MediaModelAdapter(new MediaModelAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(@NonNull MediaModel mediaModel) {
-                MediaPlayerActivity.start(AudioLibrary.this, mediaModel.getUrl());
+                MediaPlayerActivity.start(AudioLibrary.this, mediaModel.getName(), mediaModel.getUrl());
             }
         });
         recyclerView.setAdapter(adapter);
 
         fabStorageClick();
+
+        AudioLibraryPermissionsDispatcher.loadFromExternalWithPermissionCheck(AudioLibrary.this);
     }
 
     public ArrayList<File> findAudioBooks(File root) {

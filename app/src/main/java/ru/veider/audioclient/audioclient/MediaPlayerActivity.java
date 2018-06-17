@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,9 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,15 +36,14 @@ public class MediaPlayerActivity extends AppCompatActivity {
     private static final String EXTRA_POS = "position";
     private static final String APP_PREFERENCES_NAME = "book";
 
-    private SeekBar timeSeekBar;
-    private TextView mCurrentTime, lastTime, bookName;
-    private Timer timer;
+    private SeekBar mPositionBar;
+    private TextView mCurrentTime, mFullTime, bookName;
     private SharedPreferences sharedPreferences;
     private MediaPlayer mediaPlayer;
     private MediaModel mediaModel;
     private ImageButton mPlayButton, mNextButton, mBackButton;
-    private ImageView coverView;
-    private Thread updateSeekBar;
+    private ImageView mCoverView;
+    int intFullTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,43 +58,17 @@ public class MediaPlayerActivity extends AppCompatActivity {
         mediaModel = AudioLibrary.repository.get(position);
         mediaPlayer = MediaPlayer.create(this, Uri.parse(mediaModel.getUrl()));
 
-        coverView = findViewById(R.id.book);
+        mCoverView = findViewById(R.id.book);
         mCurrentTime = findViewById(R.id.current_time);
         mPlayButton = findViewById(R.id.playButton);
         mNextButton = findViewById(R.id.nextButton);
         mBackButton = findViewById(R.id.backButton);
-        lastTime = findViewById(R.id.full_time);
+        mFullTime = findViewById(R.id.full_time);
         bookName = findViewById(R.id.name);
-        timeSeekBar = findViewById(R.id.seekBar);
-
-//        updateSeekBar = new Thread(){
-//            @Override
-//            public void run() {
-//                int totalDuration = mediaPlayer.getDuration();
-//                int currentPosition = 0;
-//                timeSeekBar.setMax(totalDuration);
-//                while (currentPosition < totalDuration){
-//                    try {
-//                        sleep(500);
-//                        currentPosition = mediaPlayer.getCurrentPosition();
-//                        timeSeekBar.setProgress(currentPosition);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                //super.run();
-//
-//            }
-//        };
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
+        mPositionBar = findViewById(R.id.seekBar);
 
         int totalTime = mediaPlayer.getDuration();
-
-        bookName.setText(mediaModel.getName());
+        mPositionBar.setMax(totalTime);
 
         //Запоминание позиции книги
         sharedPreferences = getSharedPreferences(APP_PREFERENCES_NAME, MODE_PRIVATE);
@@ -105,6 +77,16 @@ public class MediaPlayerActivity extends AppCompatActivity {
             curPos = 0;
         }
         mediaPlayer.seekTo(curPos);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+//        totalTime = mediaPlayer.getDuration();
+
+        bookName.setText(mediaModel.getName());
 
         //Слушатели кнопок
         mPlayButton.setOnClickListener(new View.OnClickListener() {
@@ -121,14 +103,6 @@ public class MediaPlayerActivity extends AppCompatActivity {
             }
         });
 
-        mNextButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                return false;
-            }
-        });
-
-
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,9 +110,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
             }
         });
 
-        timeSeekBar.setMax(totalTime);
-
-        timeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mPositionBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
@@ -157,14 +129,52 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                mediaPlayer.seekTo(timeSeekBar.getProgress());
+                mediaPlayer.seekTo(mPositionBar.getProgress());
             }
         });
 
-        playPause(mediaPlayer, mPlayButton);
+        //Thread(Update
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (mediaPlayer != null){
+                    try {
+                        Message message = new Message();
+                        message.what = mediaPlayer.getCurrentPosition();//временами баг
+                        handler.sendMessage(message);
+
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e){
+                        showToast("InterruptedException" + e);
+                    }
+                }
+            }
+        }).start();
+
+        if (mediaPlayer != null) {
+            playPause(mediaPlayer, mPlayButton);
+        }
 
         bookCover();
     }
+
+    //утечка памяти, как исправить - не знаю
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            int currentPosition = msg.what;
+            //Update mPositionBar
+            mPositionBar.setProgress(currentPosition);
+
+            //Update Labels
+            String elapsedTime = createTimeLabel(currentPosition);
+            mCurrentTime.setText(elapsedTime);
+
+            intFullTime = mediaPlayer.getDuration();
+            String fullTime = createTimeLabel(intFullTime);
+            mFullTime.setText(fullTime);
+        }
+    };
 
     //вытягивание обложки из Google Play books
     private void bookCover(){
@@ -194,7 +204,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
                                 Picasso.get()
                                         .load(imageUrl)
                                         .placeholder(R.drawable.ic_photo_size_select_actual_black_24dp)
-                                        .into(coverView);
+                                        .into(mCoverView);
                             }
                         }
 
@@ -211,7 +221,6 @@ public class MediaPlayerActivity extends AppCompatActivity {
                 showToast("onFailure");
             }
         });
-
     }
 
     //Вывод тостов
@@ -221,7 +230,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
     //Время
     private String createTimeLabel(int time) {
-        String timeLabel = "";
+        String timeLabel;
         int min = time / 1000 / 60;
         int sec = time / 1000 % 60;
 
@@ -236,36 +245,17 @@ public class MediaPlayerActivity extends AppCompatActivity {
     //Основной метод плеера, тут находится основная логика плеера
     private void playPause(final MediaPlayer mediaPlayer, ImageButton mPlayButton) {
         //if need to pause
-        if (mediaPlayer.isPlaying() && timer != null) {
+        if (mediaPlayer.isPlaying()) {
             //pause
             mPlayButton.setImageResource(R.drawable.ic_play_circle_filled_black_24dp);
-            timer.cancel();
-            timer = null;
 
             saveCurrentPlaying(mediaModel.getName(), mediaPlayer.getCurrentPosition());
 
             mediaPlayer.pause();
-        } else if (timer == null) {
+        } else  {
             //play
             mPlayButton.setImageResource(R.drawable.ic_pause_circle_filled_black_24dp);
             mediaPlayer.start();
-            timer = new Timer();
-            timer.scheduleAtFixedRate(new TimerTask() {//
-                @Override
-                public void run() {
-                    timeSeekBar.setProgress(mediaPlayer.getCurrentPosition());
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String elapsedTime = createTimeLabel(mediaPlayer.getCurrentPosition());
-                            mCurrentTime.setText(elapsedTime);
-                            String fullTime = createTimeLabel(mediaPlayer.getDuration());
-                            lastTime.setText(fullTime);
-                        }
-                    });
-                }
-            }, 0, 1000);
         }
     }
 
@@ -287,13 +277,4 @@ public class MediaPlayerActivity extends AppCompatActivity {
         mediaPlayer.release();
         mediaPlayer = null;
     }
-
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        saveCurrentPlaying(mediaModel.getName(), mediaPlayer.getCurrentPosition());
-//        playPause(mediaPlayer, mPlayButton);
-//        mediaPlayer.release();
-//        mediaPlayer = null;
-//    }
 }

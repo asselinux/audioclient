@@ -98,14 +98,15 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
         bookName.setText(mediaModel.getName());
 
+        //Запоминание позиции книги
         sharedPreferences = getSharedPreferences(APP_PREFERENCES_NAME, MODE_PRIVATE);
         int curPos = sharedPreferences.getInt(EXTRA_POS, 0);
         if (!mediaModel.getName().equals(sharedPreferences.getString("name", null))) {
             curPos = 0;
         }
-
         mediaPlayer.seekTo(curPos);
 
+        //Слушатели кнопок
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,17 +114,25 @@ public class MediaPlayerActivity extends AppCompatActivity {
             }
         });
 
-        mBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 10000);
-            }
-        });
-
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 30000);
+            }
+        });
+
+        mNextButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return false;
+            }
+        });
+
+
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 10000);
             }
         });
 
@@ -154,9 +163,12 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
         playPause(mediaPlayer, mPlayButton);
 
-        final Api api = new NetworkModule().api();
+        bookCover();
+    }
 
-        //вытягивание обложки из Google Play books
+    //вытягивание обложки из Google Play books
+    private void bookCover(){
+        final Api api = new NetworkModule().api();
         api.searchFilm(mediaModel.getName()).enqueue(new Callback<SearchResponse>() {
             @Override
             public void onResponse(@NonNull Call<SearchResponse> call, @NonNull Response<SearchResponse> response) {
@@ -200,13 +212,14 @@ public class MediaPlayerActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
+    //Вывод тостов
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
+    //Время
     private String createTimeLabel(int time) {
         String timeLabel = "";
         int min = time / 1000 / 60;
@@ -220,8 +233,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         return timeLabel;
     }
 
-
-
+    //Основной метод плеера, тут находится основная логика плеера
     private void playPause(final MediaPlayer mediaPlayer, ImageButton mPlayButton) {
         //if need to pause
         if (mediaPlayer.isPlaying() && timer != null) {
@@ -257,6 +269,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         }
     }
 
+    //сохранение текущей позиции
     private void saveCurrentPlaying(String name, int position) {
         sharedPreferences.edit().putString("name", name).putInt("position", position).apply();
     }

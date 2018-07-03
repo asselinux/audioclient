@@ -28,7 +28,7 @@ import ru.veider.audioclient.audioclient.data.SearchResponse;
 import ru.veider.audioclient.audioclient.recycler.MediaModel;
 import ru.veider.audioclient.audioclient.storage.AudioLibrary;
 
-public class MediaPlayerActivity extends AppCompatActivity {
+public class MediaPlayerActivity extends AppCompatActivity implements IMediaPlayer {
     //TODO shared preference, запоминание позиции
 
     private static final String EXTRA_URL = "url";
@@ -177,7 +177,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
     };
 
     //вытягивание обложки из Google Play books
-    private void bookCover(){
+    public void bookCover(){
         final Api api = new NetworkModule().api();
         api.searchFilm(mediaModel.getName()).enqueue(new Callback<SearchResponse>() {
             @Override
@@ -224,12 +224,12 @@ public class MediaPlayerActivity extends AppCompatActivity {
     }
 
     //Вывод тостов
-    private void showToast(String message) {
+    public void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     //Время
-    private String createTimeLabel(int time) {
+    public String createTimeLabel(int time) {
         String timeLabel;
         int min = time / 1000 / 60;
         int sec = time / 1000 % 60;
@@ -243,7 +243,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
     }
 
     //Основной метод плеера, тут находится основная логика плеера
-    private void playPause(final MediaPlayer mediaPlayer, ImageButton mPlayButton) {
+    public void playPause(final MediaPlayer mediaPlayer, ImageButton mPlayButton) {
         //if need to pause
         if (mediaPlayer.isPlaying()) {
             //pause
@@ -260,7 +260,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
     }
 
     //сохранение текущей позиции
-    private void saveCurrentPlaying(String name, int position) {
+    public void saveCurrentPlaying(String name, int position) {
         sharedPreferences.edit().putString("name", name).putInt("position", position).apply();
     }
 
@@ -276,5 +276,6 @@ public class MediaPlayerActivity extends AppCompatActivity {
         playPause(mediaPlayer, mPlayButton);
         mediaPlayer.release();
         mediaPlayer = null;
+//        handler.removeCallbacks();
     }
 }

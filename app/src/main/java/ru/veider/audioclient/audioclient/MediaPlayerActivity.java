@@ -6,7 +6,9 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
@@ -17,11 +19,6 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,7 +28,7 @@ import ru.veider.audioclient.audioclient.data.SearchResponse;
 import ru.veider.audioclient.audioclient.recycler.MediaModel;
 import ru.veider.audioclient.audioclient.storage.AudioLibrary;
 
-public class MediaPlayerActivity extends AppCompatActivity {
+public class MediaPlayerActivity extends AppCompatActivity implements IMediaPlayer {
     //TODO shared preference, запоминание позиции
 
     private static final String EXTRA_URL = "url";
@@ -39,14 +36,14 @@ public class MediaPlayerActivity extends AppCompatActivity {
     private static final String EXTRA_POS = "position";
     private static final String APP_PREFERENCES_NAME = "book";
 
-
-    private SeekBar timeSeekBar;
-    private TextView numberForTrack, lastTime, textName;
-    Timer timer;
-    SharedPreferences mSettings;
-    MediaPlayer mediaPlayer;
-    MediaModel mediaModel;
-     ImageButton mPlayButton;
+    private SeekBar mPositionBar;
+    private TextView mCurrentTime, mFullTime, bookName;
+    private SharedPreferences sharedPreferences;
+    private MediaPlayer mediaPlayer;
+    private MediaModel mediaModel;
+    private ImageButton mPlayButton, mNextButton, mBackButton;
+    private ImageView mCoverView;
+    int intFullTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,37 +55,51 @@ public class MediaPlayerActivity extends AppCompatActivity {
 //        String name = intent.getStringExtra(EXTRA_NAME);
         int position = intent.getIntExtra(EXTRA_POS, 0);
 
-
         mediaModel = AudioLibrary.repository.get(position);
         mediaPlayer = MediaPlayer.create(this, Uri.parse(mediaModel.getUrl()));
 
-        numberForTrack = findViewById(R.id.current_time);
-        final ImageView coverView = findViewById(R.id.book);
+        mCoverView = findViewById(R.id.book);
+        mCurrentTime = findViewById(R.id.current_time);
         mPlayButton = findViewById(R.id.playButton);
-        ImageButton mNextButton = findViewById(R.id.nextButton);
-        ImageButton mBackButton = findViewById(R.id.backButton);
-        lastTime = findViewById(R.id.full_time);
-        textName = findViewById(R.id.name);
-
-//        mediaPlayer.start();
+        mNextButton = findViewById(R.id.nextButton);
+        mBackButton = findViewById(R.id.backButton);
+        mFullTime = findViewById(R.id.full_time);
+        bookName = findViewById(R.id.name);
+        mPositionBar = findViewById(R.id.seekBar);
 
         int totalTime = mediaPlayer.getDuration();
+        mPositionBar.setMax(totalTime);
 
-
-
-        textName.setText(mediaModel.getName());
-
-        mSettings = getSharedPreferences(APP_PREFERENCES_NAME, MODE_PRIVATE);
-        int curPos = mSettings.getInt(EXTRA_POS, 0);
-        if (!mediaModel.getName().equals(mSettings.getString("name", null))) {
+        //Запоминание позиции книги
+        sharedPreferences = getSharedPreferences(APP_PREFERENCES_NAME, MODE_PRIVATE);
+        int curPos = sharedPreferences.getInt(EXTRA_POS, 0);
+        if (!mediaModel.getName().equals(sharedPreferences.getString("name", null))) {
             curPos = 0;
         }
         mediaPlayer.seekTo(curPos);
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+//        totalTime = mediaPlayer.getDuration();
+
+        bookName.setText(mediaModel.getName());
+
+        //Слушатели кнопок
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 playPause(mediaPlayer, mPlayButton);
+            }
+        });
+
+        mNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 30000);
             }
         });
 
@@ -99,31 +110,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
             }
         });
 
-//        mBackButton.setOnLongClickListener(new View.OnLongClickListener() {
-//             @Override public boolean onLongClick(View v) {
-//                 mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 5000);
-//                 return false;
-//             }
-//        });
-
-        mNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 30000);
-            }
-        });
-
-//        mNextButton.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override public boolean onLongClick(View v) {
-//                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 5000);
-//                return false;
-//            }
-//        });
-
-        timeSeekBar = findViewById(R.id.seekBar);
-        timeSeekBar.setMax(totalTime);
-
-        timeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mPositionBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
@@ -142,22 +129,64 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                mediaPlayer.seekTo(timeSeekBar.getProgress());
+                mediaPlayer.seekTo(mPositionBar.getProgress());
             }
         });
 
-        playPause(mediaPlayer, mPlayButton);
+        //Thread(Update
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (mediaPlayer != null){
+                    try {
+                        Message message = new Message();
+                        message.what = mediaPlayer.getCurrentPosition();//временами баг
+                        handler.sendMessage(message);
 
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e){
+                        showToast("InterruptedException" + e);
+                    }
+                }
+            }
+        }).start();
+
+        if (mediaPlayer != null) {
+            playPause(mediaPlayer, mPlayButton);
+        }
+
+        bookCover();
+    }
+
+    //утечка памяти, как исправить - не знаю
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            int currentPosition = msg.what;
+            //Update mPositionBar
+            mPositionBar.setProgress(currentPosition);
+
+            //Update Labels
+            String elapsedTime = createTimeLabel(currentPosition);
+            mCurrentTime.setText(elapsedTime);
+
+            intFullTime = mediaPlayer.getDuration();
+            String fullTime = createTimeLabel(intFullTime);
+            mFullTime.setText(fullTime);
+        }
+    };
+
+    //вытягивание обложки из Google Play books
+    public void bookCover(){
         final Api api = new NetworkModule().api();
-
         api.searchFilm(mediaModel.getName()).enqueue(new Callback<SearchResponse>() {
             @Override
-            public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
+            public void onResponse(@NonNull Call<SearchResponse> call, @NonNull Response<SearchResponse> response) {
                 if (response.isSuccessful()) {
                     final SearchResponse body = response.body();
 
                     if (body.items == null || body.items.isEmpty()) {
-                        showToast("Empty body");
+                        showToast("Can't find image");
                         return;
                     }
 
@@ -165,7 +194,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
                     api.getFilm(id).enqueue(new Callback<Film>() {
                         @Override
-                        public void onResponse(Call<Film> call, Response<Film> response) {
+                        public void onResponse(@NonNull Call<Film> call, @NonNull Response<Film> response) {
                             if (response.isSuccessful()) {
                                 final String imageUrl = response.body().volumeInfo.imageLinks.medium;
                                 if (imageUrl == null) {
@@ -175,31 +204,33 @@ public class MediaPlayerActivity extends AppCompatActivity {
                                 Picasso.get()
                                         .load(imageUrl)
                                         .placeholder(R.drawable.ic_photo_size_select_actual_black_24dp)
-                                        .into(coverView);
+                                        .into(mCoverView);
                             }
                         }
 
                         @Override
-                        public void onFailure(Call<Film> call, Throwable t) {
-
+                        public void onFailure(@NonNull Call<Film> call, @NonNull Throwable t) {
+                            showToast("onFailure");
                         }
                     });
                 }
             }
 
             @Override
-            public void onFailure(Call<SearchResponse> call, Throwable t) {
-
+            public void onFailure(@NonNull Call<SearchResponse> call, @NonNull Throwable t) {
+                showToast("onFailure");
             }
         });
     }
 
-    private void showToast(String message) {
+    //Вывод тостов
+    public void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
-    private String createTimeLabel(int time) {
-        String timeLabel = "";
+    //Время
+    public String createTimeLabel(int time) {
+        String timeLabel;
         int min = time / 1000 / 60;
         int sec = time / 1000 % 60;
 
@@ -211,45 +242,27 @@ public class MediaPlayerActivity extends AppCompatActivity {
         return timeLabel;
     }
 
-    private void playPause(final MediaPlayer mediaPlayer, ImageButton mPlayButton) {
+    //Основной метод плеера, тут находится основная логика плеера
+    public void playPause(final MediaPlayer mediaPlayer, ImageButton mPlayButton) {
         //if need to pause
-        if (mediaPlayer.isPlaying() && timer != null) {
+        if (mediaPlayer.isPlaying()) {
             //pause
             mPlayButton.setImageResource(R.drawable.ic_play_circle_filled_black_24dp);
-            timer.cancel();
-            timer = null;
 
             saveCurrentPlaying(mediaModel.getName(), mediaPlayer.getCurrentPosition());
 
             mediaPlayer.pause();
-        } else if (timer == null) {
+        } else  {
             //play
             mPlayButton.setImageResource(R.drawable.ic_pause_circle_filled_black_24dp);
             mediaPlayer.start();
-            timer = new Timer();
-            timer.scheduleAtFixedRate(new TimerTask() {//
-                @Override
-                public void run() {
-                    timeSeekBar.setProgress(mediaPlayer.getCurrentPosition());
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String elapsedTime = createTimeLabel(mediaPlayer.getCurrentPosition());
-                            numberForTrack.setText(elapsedTime);
-                            String fullTime = createTimeLabel(mediaPlayer.getDuration());
-                            lastTime.setText(fullTime);
-                        }
-                    });
-                }
-            }, 0, 1000);
         }
     }
 
-    private void saveCurrentPlaying(String name, int position) {
-        mSettings.edit().putString("name", name).putInt("position", position).apply();
+    //сохранение текущей позиции
+    public void saveCurrentPlaying(String name, int position) {
+        sharedPreferences.edit().putString("name", name).putInt("position", position).apply();
     }
-
 
     public static void start(Context context, int position) {
         context.startActivity(
@@ -257,12 +270,12 @@ public class MediaPlayerActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         saveCurrentPlaying(mediaModel.getName(), mediaPlayer.getCurrentPosition());
         playPause(mediaPlayer, mPlayButton);
         mediaPlayer.release();
-       mediaPlayer = null;
-
+        mediaPlayer = null;
+//        handler.removeCallbacks();
     }
 }

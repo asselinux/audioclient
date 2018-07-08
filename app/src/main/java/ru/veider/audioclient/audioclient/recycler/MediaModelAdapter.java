@@ -19,7 +19,7 @@ public class MediaModelAdapter extends RecyclerView.Adapter<MediaModelAdapter.Mo
 
     private final List<MediaModel> models = new ArrayList<>();
 
-    public OnItemClickListener onItemClickListener;
+    private OnItemClickListener onItemClickListener;
 
     public MediaModelAdapter(@NonNull OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
@@ -47,7 +47,9 @@ public class MediaModelAdapter extends RecyclerView.Adapter<MediaModelAdapter.Mo
     @Override
     public void onBindViewHolder(@NonNull MediaModelAdapter.ModelHolder holder, int position) {
         MediaModel model = models.get(position);
-        Picasso.get().load(model.getImage()).into(holder.image);
+        Picasso.get()
+                .load(model.getImage())
+                .into(holder.image);
         holder.name.setText(model.getName());
     }
 

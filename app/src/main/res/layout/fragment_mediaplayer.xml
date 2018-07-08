@@ -70,27 +70,43 @@
 
         <ImageButton
             android:id="@+id/backButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="@dimen/model_item__icon_image_size"
+            android:layout_height="@dimen/model_item__icon_image_size"
             android:background="?android:selectableItemBackgroundBorderless"
             android:src="@drawable/ic_fast_rewind_black_24dp"
             tools:ignore="contentDescription"
             />
 
         <ImageButton
+            android:layout_width="@dimen/model_item__icon_image_size"
+            android:layout_height="@dimen/model_item__icon_image_size"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_fast_rewind_black_24dp"
+            tools:ignore="contentDescription"
+
+            />
+
+        <ImageButton
             android:id="@+id/playButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="@dimen/model_item__icon_image_size"
+            android:layout_height="@dimen/model_item__icon_image_size"
             android:background="?android:selectableItemBackgroundBorderless"
             android:src="@drawable/ic_play_circle_filled_black_24dp"
             tools:ignore="contentDescription"
             />
 
+        <ImageButton
+            android:layout_width="@dimen/model_item__icon_image_size"
+            android:layout_height="@dimen/model_item__icon_image_size"
+            tools:ignore="contentDescription"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_fast_forward_black_24dp"
+            />
 
         <ImageButton
             android:id="@+id/nextButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="@dimen/model_item__icon_image_size"
+            android:layout_height="@dimen/model_item__icon_image_size"
             android:background="?android:selectableItemBackgroundBorderless"
             android:src="@drawable/ic_fast_forward_black_24dp"
             tools:ignore="contentDescription"

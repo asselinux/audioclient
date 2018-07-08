@@ -278,4 +278,6 @@ public class MediaPlayerActivity extends AppCompatActivity implements IMediaPlay
         mediaPlayer = null;
 //        handler.removeCallbacks();
     }
+
+
 }

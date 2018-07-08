@@ -13,7 +13,14 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import ru.veider.audioclient.audioclient.NetworkModule;
 import ru.veider.audioclient.audioclient.R;
+import ru.veider.audioclient.audioclient.data.Api;
+import ru.veider.audioclient.audioclient.data.Film;
+import ru.veider.audioclient.audioclient.data.SearchResponse;
 
 public class MediaModelAdapter extends RecyclerView.Adapter<MediaModelAdapter.ModelHolder> {
 

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.Toast;
 
 import ru.veider.audioclient.audioclient.storage.AudioLibrary;
 
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, MediaPlayerActivity.class);
+                Toast.makeText(MainActivity.this, "pressed", Toast.LENGTH_SHORT).show();
                 startActivity(intent);
             }
         });

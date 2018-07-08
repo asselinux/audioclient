@@ -50,6 +50,22 @@ public class MediaPlayerFragment extends Fragment {
     private static final String EXTRA_POS = "position";
     private static final String APP_PREFERENCES_NAME = "book";
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        int totalTime = mediaPlayer.getDuration();
+        mPositionBar.setMax(totalTime);
+
+        //Запоминание позиции книги
+        sharedPreferences = this.getActivity().getSharedPreferences(APP_PREFERENCES_NAME, MODE_PRIVATE);
+        int curPos = sharedPreferences.getInt(EXTRA_POS, 0);
+        if (!mediaModel.getName().equals(sharedPreferences.getString("name", null))) {
+            curPos = 0;
+        }
+        mediaPlayer.seekTo(curPos);
+
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -291,5 +307,15 @@ public class MediaPlayerFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+    }
+
+    //тут я должен указывать данные, которые передаю ?в фрагмент
+    public static MediaPlayerFragment newInstance() {
+        MediaPlayerFragment mediaPlayerFragment = new MediaPlayerFragment();
+        Bundle bundle = new Bundle();
+        //передача каких то данных
+//        bundle.putInt("ea", wef);
+        mediaPlayerFragment.setArguments(bundle);
+        return mediaPlayerFragment;
     }
 }

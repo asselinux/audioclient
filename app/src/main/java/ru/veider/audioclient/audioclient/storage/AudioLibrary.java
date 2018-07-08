@@ -30,6 +30,7 @@ import permissions.dispatcher.RuntimePermissions;
 import ru.veider.audioclient.audioclient.MediaPlayerActivity;
 import ru.veider.audioclient.audioclient.R;
 import ru.veider.audioclient.audioclient.SettingsActivity;
+import ru.veider.audioclient.audioclient.fragments.MediaPlayerFragment;
 import ru.veider.audioclient.audioclient.recycler.MediaModel;
 import ru.veider.audioclient.audioclient.recycler.MediaModelAdapter;
 
@@ -64,6 +65,11 @@ public class AudioLibrary extends AppCompatActivity {
         fabStorageClick();
 
         AudioLibraryPermissionsDispatcher.loadFromExternalWithPermissionCheck(AudioLibrary.this);
+
+        MediaPlayerFragment playerFragment = new MediaPlayerFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.fra)
     }
 
     public ArrayList<File> findAudioBooks(File root) {

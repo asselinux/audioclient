@@ -106,7 +106,7 @@ public class AudioLibrary extends AppCompatActivity {
 
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     void loadFromExternal() { // reading a file
-        ArrayList<File> myBooks = findAudioBooks(Environment.getExternalStoragePublicDirectory("AudioBooks"));
+        ArrayList<File> myBooks = findAudioBooks(Environment.getExternalStoragePublicDirectory("Download"));
         List<MediaModel> list = new ArrayList<>();
         for (int i = 0; i < myBooks.size(); i++) {
             File file = myBooks.get(i);

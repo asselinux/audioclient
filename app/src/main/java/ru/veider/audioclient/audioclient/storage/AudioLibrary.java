@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -49,6 +51,8 @@ public class AudioLibrary extends AppCompatActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
 
+        //старт плеера
+        //заменить на старт фрагмента
         adapter = new MediaModelAdapter(new MediaModelAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(@NonNull MediaModel mediaModel, int position) {
@@ -91,7 +95,7 @@ public class AudioLibrary extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,@NonNull String[] permissions,@NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // NOTE: delegate the permission handling to generated method
 
@@ -118,22 +122,22 @@ public class AudioLibrary extends AppCompatActivity {
 
     @OnShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
     void showRationaleForStorage(final PermissionRequest request) {
-        showDialog("In order to proceed you need to provide storage permission");
+        showDialog();
     }
 
     @OnPermissionDenied(Manifest.permission.READ_EXTERNAL_STORAGE)
     void showDeniedLocation() {
-        showDialog("In order to proceed you need to provide storage permission");
+        showDialog();
     }
 
     @OnNeverAskAgain(Manifest.permission.READ_EXTERNAL_STORAGE)
     void showNeverAskForLocation() {
-        showDialog("In order to proceed you need to provide storage permission");
+        showDialog();
     }
 
-    private void showDialog(String message) {
+    private void showDialog() {
         new AlertDialog.Builder(this)
-                .setMessage(message)
+                .setMessage("In order to proceed you need to provide storage permission")
 //                .setPositiveButton(R.string.button_allow, (dialog, button) -> request.proceed())
 //                .setNegativeButton(R.string.button_deny, (dialog, button) -> request.cancel())
                 .show();
@@ -159,5 +163,25 @@ public class AudioLibrary extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openMediaPlayerFragment(Fragment fragment, boolean addToBackStack){
+        final FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction();
+
+        if (addToBackStack) {
+            transaction
+                    .addToBackStack(null)
+                    .setCustomAnimations(
+                            R.anim.slide_in_right, R.anim.slide_out_left,
+                            R.anim.slide_in_left, R.anim.slide_out_right
+                    );
+        }
+
+        //тут должен быть id FrameLayout из xml файла activity_main, который соединен с активити
+        transaction
+                .replace(R.id.content, fragment)//
+                .commit();
+
     }
 }

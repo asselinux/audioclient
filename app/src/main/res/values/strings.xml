@@ -6,7 +6,7 @@
     <string name="permission_storage_manager_denied">Read storage permission was
             denied. Please consider granting it in order to access the Storage!</string>
 
-    <string name="permission_storage_manager_never_askagain">Read storage permission was
+    <string name="permission_storage_manager_never_ask_again">Read storage permission was
             denied with never ask again.</string>
 
     <string name="name">new audio book</string>
@@ -24,4 +24,8 @@
         <item>1,5x</item>
         <item>2x</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="night_mode">Night Mode</string>
 </resources>

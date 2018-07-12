@@ -26,9 +26,8 @@ import ru.veider.audioclient.audioclient.data.Api;
 import ru.veider.audioclient.audioclient.data.Film;
 import ru.veider.audioclient.audioclient.data.SearchResponse;
 import ru.veider.audioclient.audioclient.recycler.MediaModel;
-import ru.veider.audioclient.audioclient.storage.AudioLibrary;
 
-public class MediaPlayerActivity extends AppCompatActivity implements IMediaPlayer {
+public class MediaPlayerActivity extends AppCompatActivity {
     //TODO shared preference, запоминание позиции
 
     private static final String EXTRA_URL = "url";
@@ -55,7 +54,7 @@ public class MediaPlayerActivity extends AppCompatActivity implements IMediaPlay
 //        String name = intent.getStringExtra(EXTRA_NAME);
         int position = intent.getIntExtra(EXTRA_POS, 0);
 
-        mediaModel = AudioLibrary.repository.get(position);
+//        mediaModel = MainActivity.repository.get(position);
         mediaPlayer = MediaPlayer.create(this, Uri.parse(mediaModel.getUrl()));
 
         mCoverView = findViewById(R.id.book);
@@ -170,14 +169,14 @@ public class MediaPlayerActivity extends AppCompatActivity implements IMediaPlay
             String elapsedTime = createTimeLabel(currentPosition);
             mCurrentTime.setText(elapsedTime);
 
-            intFullTime = mediaPlayer.getDuration();
+            intFullTime = mediaPlayer.getDuration(); //
             String fullTime = createTimeLabel(intFullTime);
             mFullTime.setText(fullTime);
         }
     };
 
     //вытягивание обложки из Google Play books
-    public void bookCover(){
+    private void bookCover(){
         final Api api = new NetworkModule().api();
         api.searchFilm(mediaModel.getName()).enqueue(new Callback<SearchResponse>() {
             @Override
@@ -224,12 +223,12 @@ public class MediaPlayerActivity extends AppCompatActivity implements IMediaPlay
     }
 
     //Вывод тостов
-    public void showToast(String message) {
+    private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     //Время
-    public String createTimeLabel(int time) {
+    private String createTimeLabel(int time) {
         String timeLabel;
         int min = time / 1000 / 60;
         int sec = time / 1000 % 60;
@@ -243,7 +242,7 @@ public class MediaPlayerActivity extends AppCompatActivity implements IMediaPlay
     }
 
     //Основной метод плеера, тут находится основная логика плеера
-    public void playPause(final MediaPlayer mediaPlayer, ImageButton mPlayButton) {
+    private void playPause(final MediaPlayer mediaPlayer, ImageButton mPlayButton) {
         //if need to pause
         if (mediaPlayer.isPlaying()) {
             //pause
@@ -260,7 +259,7 @@ public class MediaPlayerActivity extends AppCompatActivity implements IMediaPlay
     }
 
     //сохранение текущей позиции
-    public void saveCurrentPlaying(String name, int position) {
+    private void saveCurrentPlaying(String name, int position) {
         sharedPreferences.edit().putString("name", name).putInt("position", position).apply();
     }
 

@@ -1,4 +1,4 @@
-package ru.veider.audioclient.audioclient;
+package ru.veider.audioclient.audioclient.fragments;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,8 +9,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -22,16 +25,18 @@ import com.squareup.picasso.Picasso;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import ru.veider.audioclient.audioclient.MediaPlayerActivity;
+import ru.veider.audioclient.audioclient.NetworkModule;
+import ru.veider.audioclient.audioclient.R;
 import ru.veider.audioclient.audioclient.data.Api;
 import ru.veider.audioclient.audioclient.data.Film;
 import ru.veider.audioclient.audioclient.data.SearchResponse;
 import ru.veider.audioclient.audioclient.recycler.MediaModel;
 
-public class MediaPlayerActivity extends AppCompatActivity {
-    //TODO shared preference, запоминание позиции
+import static android.content.Context.MODE_PRIVATE;
 
-    private static final String EXTRA_URL = "url";
-    private static final String EXTRA_NAME = "name";
+public class MediaPlayerFragment extends Fragment {
+
     private static final String EXTRA_POS = "position";
     private static final String APP_PREFERENCES_NAME = "book";
 
@@ -44,38 +49,53 @@ public class MediaPlayerActivity extends AppCompatActivity {
     private ImageView mCoverView;
     int intFullTime;
 
+
+    public MediaPlayerFragment() {
+        // Required empty public constructor
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_media_player);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
 
-        Intent intent = getIntent();
-//        String url = intent.getStringExtra(EXTRA_URL);
-//        String name = intent.getStringExtra(EXTRA_NAME);
-        int position = intent.getIntExtra(EXTRA_POS, 0);
+        View view = inflater.inflate(R.layout.fragment_media_player, container, false);
+        mCoverView = view.findViewById(R.id.book);
+        mCurrentTime = view.findViewById(R.id.current_time);
+        mPlayButton = view.findViewById(R.id.playButton);
+        mNextButton = view.findViewById(R.id.nextButton);
+        mBackButton = view.findViewById(R.id.backButton);
+        mFullTime = view.findViewById(R.id.full_time);
+        bookName = view.findViewById(R.id.name);
+        mPositionBar = view.findViewById(R.id.seekBar);
 
-//        mediaModel = MainActivity.repository.get(position);
-        mediaPlayer = MediaPlayer.create(this, Uri.parse(mediaModel.getUrl()));
+        return view;
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+//        int position = intent.getIntExtra(EXTRA_POS, 0);
+
+        mediaPlayer = MediaPlayer.create(getContext(), Uri.parse(mediaModel.getUrl()));
 
         int totalTime = mediaPlayer.getDuration();
         mPositionBar.setMax(totalTime);
 
         //Запоминание позиции книги
-        sharedPreferences = getSharedPreferences(APP_PREFERENCES_NAME, MODE_PRIVATE);
+        sharedPreferences = getContext().getSharedPreferences(APP_PREFERENCES_NAME, MODE_PRIVATE);
         int curPos = sharedPreferences.getInt(EXTRA_POS, 0);
         if (!mediaModel.getName().equals(sharedPreferences.getString("name", null))) {
             curPos = 0;
         }
-        mediaPlayer.seekTo(curPos);
 
+        mediaPlayer.seekTo(curPos);
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
-//        totalTime = mediaPlayer.getDuration();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         bookName.setText(mediaModel.getName());
 
@@ -147,7 +167,9 @@ public class MediaPlayerActivity extends AppCompatActivity {
         }
 
         bookCover();
+
     }
+
 
     //утечка памяти, как исправить - не знаю
     private Handler handler = new Handler(){
@@ -216,7 +238,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
     //Вывод тостов
     private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 
     //Время
@@ -261,12 +283,21 @@ public class MediaPlayerActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    public void onDestroyView() {
+        super.onDestroyView();
         saveCurrentPlaying(mediaModel.getName(), mediaPlayer.getCurrentPosition());
         playPause(mediaPlayer, mPlayButton);
         mediaPlayer.release();
         mediaPlayer = null;
 //        handler.removeCallbacks();
+
     }
+
+    public static MediaPlayerFragment newInstance(){
+        final MediaPlayerFragment fragment = new MediaPlayerFragment();
+        final Bundle bundle = new Bundle();
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
 }

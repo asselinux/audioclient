@@ -1,15 +1,18 @@
 package ru.veider.audioclient.audioclient.storage;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import ru.veider.audioclient.audioclient.R;
 import ru.veider.audioclient.audioclient.fragments.MainFragment;
+import ru.veider.audioclient.audioclient.fragments.MediaPlayerFragment;
+import ru.veider.audioclient.audioclient.recycler.MediaModel;
+import ru.veider.audioclient.audioclient.recycler.MediaModelAdapter;
 
-//@RuntimePermissions
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MediaModelAdapter.OnItemClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,5 +40,10 @@ public class MainActivity extends AppCompatActivity {
         transaction
                 .add(R.id.content, fragment)
                 .commit();
+    }
+
+    @Override
+    public void onItemClick(@NonNull MediaModel mediaModel, int position) {
+        openFragment(MediaPlayerFragment.newInstance(),true);
     }
 }

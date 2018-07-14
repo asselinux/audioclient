@@ -69,7 +69,6 @@ public class MediaModelAdapter extends RecyclerView.Adapter<MediaModelAdapter.Mo
         public final ImageView image;
         public final TextView name;
 
-
         private ModelHolder(View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.item_model_image);
@@ -81,4 +80,3 @@ public class MediaModelAdapter extends RecyclerView.Adapter<MediaModelAdapter.Mo
         void onItemClick(@NonNull MediaModel mediaModel, int position);
     }
 }
-

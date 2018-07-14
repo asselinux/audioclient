@@ -37,7 +37,7 @@ public class MediaModelAdapter extends RecyclerView.Adapter<MediaModelAdapter.Mo
                 int position = holder.getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION && onItemClickListener != null) {
                     MediaModel model = models.get(position);
-                    onItemClickListener.onItemClick(model, position);
+                    onItemClickListener.onItemClick(model, position); //ActivityNotFoundException
                 }
             }
         });

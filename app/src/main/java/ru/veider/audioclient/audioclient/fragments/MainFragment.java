@@ -1,7 +1,6 @@
 package ru.veider.audioclient.audioclient.fragments;
 
 import android.Manifest;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -28,7 +27,6 @@ import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
-import ru.veider.audioclient.audioclient.MediaPlayerActivity;
 import ru.veider.audioclient.audioclient.R;
 import ru.veider.audioclient.audioclient.recycler.MediaModel;
 import ru.veider.audioclient.audioclient.recycler.MediaModelAdapter;
@@ -39,12 +37,6 @@ public class MainFragment extends Fragment {
     private FloatingActionButton fabStorage;
     private RecyclerView recyclerView;
     private MediaModelAdapter adapter;
-
-    public interface FragmentListener {
-        void onPositionBookListener(int position);
-    }
-
-    private FragmentListener listener;
 
     public MainFragment() {
         // Required empty public constructor
@@ -75,7 +67,7 @@ public class MainFragment extends Fragment {
         adapter = new MediaModelAdapter(new MediaModelAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(@NonNull MediaModel mediaModel, int position) {
-                MediaPlayerActivity.start(getActivity(), position);
+                MediaPlayerFragment.start(getContext(), position); //ActivityNotFoundException
             }
         });
         recyclerView.setAdapter(adapter);
@@ -188,22 +180,5 @@ public class MainFragment extends Fragment {
 //        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof FragmentListener) {
-            listener = (FragmentListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
     }
 }

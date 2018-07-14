@@ -28,7 +28,6 @@
             android:label="@string/action_settings"
             android:theme="@style/AppTheme" />
 
-        <activity android:name=".MediaPlayerActivity" />
     </application>
 
 

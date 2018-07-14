@@ -25,7 +25,6 @@ import com.squareup.picasso.Picasso;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import ru.veider.audioclient.audioclient.MediaPlayerActivity;
 import ru.veider.audioclient.audioclient.NetworkModule;
 import ru.veider.audioclient.audioclient.R;
 import ru.veider.audioclient.audioclient.data.Api;
@@ -277,9 +276,9 @@ public class MediaPlayerFragment extends Fragment {
         sharedPreferences.edit().putString("name", name).putInt("position", position).apply();
     }
 
-    public static void start(Context context, int position) {
+    public static void start(Context context, int position) { //ActivityNotFoundException
         context.startActivity(
-                new Intent(context, MediaPlayerActivity.class).putExtra(EXTRA_POS, position));
+                new Intent(context, MainFragment.class).putExtra(EXTRA_POS, position));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package ru.veider.audioclient.audioclient.fragments;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -13,6 +14,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -28,6 +31,7 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 import ru.veider.audioclient.audioclient.R;
+import ru.veider.audioclient.audioclient.SettingsActivity;
 import ru.veider.audioclient.audioclient.recycler.MediaModel;
 import ru.veider.audioclient.audioclient.recycler.MediaModelAdapter;
 
@@ -149,6 +153,7 @@ public class MainFragment extends Fragment {
                 .show();
     }
 
+    // TODO Сделать фрагмент меню, вызывается из MainFragment
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        // Inflate the menu; this adds items to the action bar if it is present.
@@ -172,7 +177,6 @@ public class MainFragment extends Fragment {
 //        return super.onOptionsItemSelected(item);
 //    }
 
-    // TODO: Rename and change types and number of parameters
     public static MainFragment newInstance() {
         MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();

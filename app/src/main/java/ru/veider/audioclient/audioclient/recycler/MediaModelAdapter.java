@@ -44,6 +44,7 @@ public class MediaModelAdapter extends RecyclerView.Adapter<MediaModelAdapter.Mo
         return holder;
     }
 
+    // TODO вызвать загрузку картинки через DATA файлы
     @Override
     public void onBindViewHolder(@NonNull MediaModelAdapter.ModelHolder holder, int position) {
         MediaModel model = models.get(position);

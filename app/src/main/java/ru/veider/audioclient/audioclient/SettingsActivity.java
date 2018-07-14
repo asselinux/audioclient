@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 public class SettingsActivity extends AppCompatActivity {
 
+    // TODO сделать фрагментом
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

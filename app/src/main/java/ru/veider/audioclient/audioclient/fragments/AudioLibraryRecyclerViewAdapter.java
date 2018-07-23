@@ -5,51 +5,42 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import permissions.dispatcher.NeedsPermission;
 import ru.veider.audioclient.audioclient.R;
-import ru.veider.audioclient.audioclient.fragments.dummy.DummyContent.DummyItem;
-import ru.veider.audioclient.audioclient.recycler.MediaModel;
-import ru.veider.audioclient.audioclient.recycler.MediaModelAdapter;
+import ru.veider.audioclient.audioclient.fragments.dummy.MediaModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link AudioLibraryFragment.OnItemClickListener}.
- *  Replace the implementation with code for your data type.
- */
-public class AudioLibraryRecyclerViewAdapter extends RecyclerView.Adapter<AudioLibraryRecyclerViewAdapter.ViewHolder> {
+
+public class AudioLibraryRecyclerViewAdapter extends RecyclerView.Adapter<AudioLibraryRecyclerViewAdapter.ModelHolder> {
 
     private final List<MediaModel> models = new ArrayList<>();
 
-    private MediaModelAdapter.OnItemClickListener onItemClickListener;
+    private OnItemClickListener onItemClickListener;
 
-    public AudioLibraryRecyclerViewAdapter(MediaModelAdapter.OnItemClickListener onItemClickListener) {
+    public AudioLibraryRecyclerViewAdapter(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
     @Override
     @NonNull
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_audiolibrary, parent, false);
-        return new ViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+    public ModelHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View itemView = inflater.inflate(R.layout.item_model, parent, false);
-        final MediaModelAdapter.ModelHolder holder = new MediaModelAdapter.ModelHolder(itemView);
+        View itemView = inflater.inflate(R.layout.item_model, parent, false);//warning
+        final ModelHolder holder = new ModelHolder(itemView);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 int position = holder.getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION && onItemClickListener != null) {
+                if (position != RecyclerView.NO_POSITION && onItemClickListener != null){
                     MediaModel model = models.get(position);
-                    onItemClickListener.onItemClick(model, position); //ActivityNotFoundException
+                    onItemClickListener.onItemClick(model, position);
                 }
             }
         });
@@ -57,26 +48,38 @@ public class AudioLibraryRecyclerViewAdapter extends RecyclerView.Adapter<AudioL
     }
 
     @Override
-    public int getItemCount() {
-        return mValues.size();
+    public void onBindViewHolder(@NonNull final ModelHolder holder, int position) {
+        MediaModel model = models.get(position);
+        Picasso.get()
+                .load(model.getImage())
+                .into(holder.image);
+        holder.name.setText(model.getName());
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public DummyItem mItem;
+    @Override
+    public int getItemCount() {
+        return models.size();
+    }
 
-        public ViewHolder(View view) {
-            super(view);
-            mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
-        }
+    public void replaceAll(List<MediaModel> newItems) {
+        this.models.clear();
+        this.models.addAll(newItems);
+        notifyDataSetChanged();
+    }
 
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+    public static class ModelHolder extends RecyclerView.ViewHolder {
+
+        public final ImageView image;
+        public final TextView name;
+
+        public ModelHolder(View itemView) {
+            super(itemView);
+            image = itemView.findViewById(R.id.item_model_image);
+            name = itemView.findViewById(R.id.item_model_name);
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(@NonNull MediaModel mediaModel, int position);
     }
 }

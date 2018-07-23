@@ -65,12 +65,12 @@ public class MediaModelAdapter extends RecyclerView.Adapter<MediaModelAdapter.Mo
         notifyDataSetChanged();
     }
 
-    static class ModelHolder extends RecyclerView.ViewHolder {
+    public static class ModelHolder extends RecyclerView.ViewHolder {
 
         public final ImageView image;
         public final TextView name;
 
-        private ModelHolder(View itemView) {
+        public ModelHolder(View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.item_model_image);
             name = itemView.findViewById(R.id.item_model_name);

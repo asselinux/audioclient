@@ -7,12 +7,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import ru.veider.audioclient.audioclient.R;
+import ru.veider.audioclient.audioclient.fragments.AudioLibraryFragment;
 import ru.veider.audioclient.audioclient.fragments.MainFragment;
 import ru.veider.audioclient.audioclient.fragments.MediaPlayerFragment;
-import ru.veider.audioclient.audioclient.recycler.MediaModel;
-import ru.veider.audioclient.audioclient.recycler.MediaModelAdapter;
+import ru.veider.audioclient.audioclient.fragments.dummy.MediaModel;
 
-public class MainActivity extends AppCompatActivity implements MediaModelAdapter.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements AudioLibraryFragment.AudioLibraryListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements MediaModelAdapter
     }
 
     @Override
-    public void onItemClick(@NonNull MediaModel mediaModel, int position) {
-        openFragment(MediaPlayerFragment.newInstance(),true);
+    public void onAudioLibraryListener(MediaModel mediaModel, int position) {
+        openFragment(MediaPlayerFragment.newInstance(), true);
     }
 }

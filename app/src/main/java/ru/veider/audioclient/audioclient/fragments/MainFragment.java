@@ -64,19 +64,19 @@ public class MainFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext())); // NPE
-        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-
-        //скорее всего придётся удалять
-        adapter = new MediaModelAdapter(new MediaModelAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(@NonNull MediaModel mediaModel, int position) {
-                MediaPlayerFragment.start(getContext(), position); //ActivityNotFoundException
-            }
-        });
-        recyclerView.setAdapter(adapter);
-
-        fabStorageClick();
+//        recyclerView.setLayoutManager(new LinearLayoutManager(getContext())); // NPE
+//        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+//
+//        //скорее всего придётся удалять
+//        adapter = new MediaModelAdapter(new MediaModelAdapter.AudioLibraryListener() {
+//            @Override
+//            public void onItemClick(@NonNull MediaModel mediaModel, int position) {
+//                MediaPlayerFragment.start(getContext(), position); //ActivityNotFoundException
+//            }
+//        });
+//        recyclerView.setAdapter(adapter);
+//
+//        fabStorageClick();
     }
 
     public ArrayList<File> findAudioBooks(File root) {

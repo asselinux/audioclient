@@ -47,21 +47,14 @@ public class AudioLibraryFragment extends Fragment {
 
     AudioLibraryListener libraryListener;
 
-
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
-//    private AudioLibraryListener mListener;
-
     public AudioLibraryFragment() {
     }
 
     // TODO: Customize parameter initialization
-    public static AudioLibraryFragment newInstance(int columnCount) {
+    public static AudioLibraryFragment newInstance() {
         AudioLibraryFragment fragment = new AudioLibraryFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+//        args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,15 +63,22 @@ public class AudioLibraryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_audiolibrary_list, container, false);
+
+        fabStorage = view.findViewById(R.id.fab);
+        recyclerView = view.findViewById(R.id.recyclerView);
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -91,19 +91,24 @@ public class AudioLibraryFragment extends Fragment {
         adapter = new AudioLibraryRecyclerViewAdapter(new AudioLibraryRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(@NonNull MediaModel mediaModel, int position) {
-            //itemClickListener on this class
+                //itemClickListener on this class
             }
         });
 
         recyclerView.setAdapter(adapter);
 
-        return view;
+        fabStorageClick();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        AudioLibraryFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
     }
 
     public ArrayList<File> findAudioBooks(File root) {
@@ -129,15 +134,15 @@ public class AudioLibraryFragment extends Fragment {
         fabStorage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainFragmentPermissionsDispatcher.loadFromExternalWithPermissionCheck(AudioLibraryListener.this);
+                AudioLibraryFragmentPermissionsDispatcher.loadFromExternalWithPermissionCheck(AudioLibraryFragment.this);
             }
         });
     }
 
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     void loadFromExternal() { // reading a file
-        ArrayList<File> myBooks = findAudioBooks(Environment.getExternalStoragePublicDirectory(""));
-        List<ru.veider.audioclient.audioclient.recycler.MediaModel> list = new ArrayList<>();
+        ArrayList<File> myBooks = findAudioBooks(Environment.getExternalStoragePublicDirectory("Download"));
+        List<MediaModel> list = new ArrayList<>();
         for (int i = 0; i < myBooks.size(); i++) {
             File file = myBooks.get(i);
             String name = file.getName().replace(".mp3", "").replace(".wav", "");

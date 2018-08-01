@@ -117,7 +117,7 @@ public class MainFragment extends Fragment {
 
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     void loadFromExternal() { // reading a file
-        ArrayList<File> myBooks = findAudioBooks(Environment.getExternalStoragePublicDirectory(""));
+        ArrayList<File> myBooks = findAudioBooks(Environment.getExternalStoragePublicDirectory("Download"));
         List<MediaModel> list = new ArrayList<>();
         for (int i = 0; i < myBooks.size(); i++) {
             File file = myBooks.get(i);

@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements AudioLibraryFragm
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null){
-            openFragment(MainFragment.newInstance(), false);
+            openFragment(AudioLibraryFragment.newInstance(), false);
         }
     }
 

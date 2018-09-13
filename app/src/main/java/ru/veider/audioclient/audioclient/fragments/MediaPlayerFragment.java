@@ -30,7 +30,7 @@ import ru.veider.audioclient.audioclient.R;
 import ru.veider.audioclient.audioclient.data.Api;
 import ru.veider.audioclient.audioclient.data.Film;
 import ru.veider.audioclient.audioclient.data.SearchResponse;
-import ru.veider.audioclient.audioclient.recycler.MediaModel;
+import ru.veider.audioclient.audioclient.fragments.dummy.MediaModel;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -38,6 +38,8 @@ public class MediaPlayerFragment extends Fragment {
 
     private static final String EXTRA_POS = "position";
     private static final String APP_PREFERENCES_NAME = "book";
+    private static final String POSITION = "args:position";
+
 
     private SeekBar mPositionBar;
     private TextView mCurrentTime, mFullTime, bookName;
@@ -51,6 +53,13 @@ public class MediaPlayerFragment extends Fragment {
 
     public MediaPlayerFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        final int position = getArguments().getInt(POSITION);
+
     }
 
     @Override
@@ -77,7 +86,7 @@ public class MediaPlayerFragment extends Fragment {
 
 //        int position = intent.getIntExtra(EXTRA_POS, 0);
 
-        mediaPlayer = MediaPlayer.create(getContext(), Uri.parse(mediaModel.getUrl()));
+        mediaPlayer = MediaPlayer.create(getContext(), Uri.parse(mediaModel.getUrl()));// npe
 
         int totalTime = mediaPlayer.getDuration();
         mPositionBar.setMax(totalTime);
@@ -168,7 +177,6 @@ public class MediaPlayerFragment extends Fragment {
         bookCover();
 
     }
-
 
     //утечка памяти, как исправить - не знаю
     private Handler handler = new Handler(){
@@ -292,11 +300,12 @@ public class MediaPlayerFragment extends Fragment {
 
     }
 
-    public static MediaPlayerFragment newInstance(){
+    public static MediaPlayerFragment newInstance(MediaModel mediaModel, int position){
         final MediaPlayerFragment fragment = new MediaPlayerFragment();
-        final Bundle bundle = new Bundle();
-        fragment.setArguments(bundle);
+        Bundle args = new Bundle();
+        args.putSerializable("123", mediaModel);
+        args.putInt("124", position);
+        fragment.setArguments(args);
         return fragment;
     }
-
 }

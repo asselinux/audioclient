@@ -2,6 +2,7 @@ package ru.veider.audioclient.audioclient.fragments;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -40,7 +41,7 @@ import ru.veider.audioclient.audioclient.fragments.dummy.MediaModel;
 @RuntimePermissions
 public class AudioLibraryFragment extends Fragment {
 
-    private static MediaModel model;
+//    private static MediaModel model;
     private FloatingActionButton fabStorage;
     private RecyclerView recyclerView;
     private AudioLibraryRecyclerViewAdapter adapter;
@@ -52,11 +53,7 @@ public class AudioLibraryFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     public static AudioLibraryFragment newInstance() {
-        AudioLibraryFragment fragment = new AudioLibraryFragment();
-        Bundle args = new Bundle();
-//        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
-        return fragment;
+        return new AudioLibraryFragment();
     }
 
     @Override
@@ -81,17 +78,19 @@ public class AudioLibraryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        }
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+
 
         adapter = new AudioLibraryRecyclerViewAdapter(new AudioLibraryRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(@NonNull MediaModel mediaModel, int position) {
-                //itemClickListener on this class
+                Toast.makeText(getContext(), "toast", Toast.LENGTH_SHORT).show();
+//                MediaPlayerFragment.newInstance(mediaModel, position);
+                ((AudioLibraryListener)getActivity()).onAudioLibraryListener(mediaModel, position);
+//                Intent intent = new Intent(getActivity(), MediaPlayerFragment.class);
+//                intent.putExtra("MediaModel", 2);
+//                startActivity(intent);
             }
         });
 
@@ -115,7 +114,7 @@ public class AudioLibraryFragment extends Fragment {
         ArrayList<File> al = new ArrayList<>();
         File[] files = root.listFiles();
         Log.w("TAG", root.getAbsolutePath());
-        if (files == null){
+        if (files == null) {
             Toast.makeText(getActivity(), "Files not found", Toast.LENGTH_SHORT).show();
         } else
             for (File singleFile : files) {
@@ -177,7 +176,6 @@ public class AudioLibraryFragment extends Fragment {
                 .show();
     }
 
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -188,6 +186,7 @@ public class AudioLibraryFragment extends Fragment {
                     + " must implement AudioLibraryListener");
         }
     }
+
 
     @Override
     public void onDetach() {

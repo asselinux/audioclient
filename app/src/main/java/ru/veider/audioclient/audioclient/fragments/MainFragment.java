@@ -35,6 +35,8 @@ import ru.veider.audioclient.audioclient.SettingsActivity;
 import ru.veider.audioclient.audioclient.recycler.MediaModel;
 import ru.veider.audioclient.audioclient.recycler.MediaModelAdapter;
 
+//а нужен ли этот класс, когда есть AudioLibraryFragment
+
 @RuntimePermissions
 public class MainFragment extends Fragment {
 

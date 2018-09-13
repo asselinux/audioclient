@@ -24,8 +24,11 @@ public class MainActivity extends AppCompatActivity implements AudioLibraryFragm
         }
     }
 
-    private void openFragment(Fragment fragment, boolean addToBackStack){
-        final FragmentTransaction transaction = getSupportFragmentManager()
+    private void openFragment(Fragment fragment, boolean addToBackStack) {
+
+        final FragmentTransaction transaction =
+
+                getSupportFragmentManager()
                 .beginTransaction();
 
         if(addToBackStack){
@@ -38,12 +41,12 @@ public class MainActivity extends AppCompatActivity implements AudioLibraryFragm
         }
 
         transaction
-                .add(R.id.content, fragment)
+                .replace(R.id.content, fragment)
                 .commit();
     }
 
     @Override
     public void onAudioLibraryListener(MediaModel mediaModel, int position) {
-        openFragment(MediaPlayerFragment.newInstance(), true);
+        openFragment(MediaPlayerFragment.newInstance(mediaModel, position), true);
     }
 }

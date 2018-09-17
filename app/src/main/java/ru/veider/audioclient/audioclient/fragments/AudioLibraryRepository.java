@@ -7,6 +7,7 @@ import java.util.Map;
 
 import ru.veider.audioclient.audioclient.fragments.dummy.MediaModel;
 
+//not used
 public class AudioLibraryRepository {
     private static final AudioLibraryRepository INSTANCE = new AudioLibraryRepository();
 

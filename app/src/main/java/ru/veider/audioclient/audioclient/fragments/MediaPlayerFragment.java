@@ -87,7 +87,7 @@ public class MediaPlayerFragment extends Fragment {
 //        int position = intent.getIntExtra(EXTRA_POS, 0);
 
         //TODO NPE, самое главное
-        mediaPlayer = MediaPlayer.create(getContext(), Uri.parse(mediaModel.getUrl()));// npe
+        mediaPlayer = MediaPlayer.create(getContext(), R.raw.music/*Uri.parse(mediaModel.getUrl())*/);// npe
 
         int totalTime = mediaPlayer.getDuration();
         mPositionBar.setMax(totalTime);

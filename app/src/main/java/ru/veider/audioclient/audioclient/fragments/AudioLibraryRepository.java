@@ -25,4 +25,8 @@ public class AudioLibraryRepository {
     public MediaModel getById(int id){
         return storage.get(id);
     }
+
+    public void save(MediaModel model){
+//        storage.put()
+    }
 }

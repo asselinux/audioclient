@@ -97,6 +97,8 @@ public class AudioLibraryFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         fabStorageClick();
+
+        AudioLibraryFragmentPermissionsDispatcher.loadFromExternalWithPermissionCheck(AudioLibraryFragment.this);
     }
 
     @Override
